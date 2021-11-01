@@ -1,11 +1,15 @@
+//alunos: Lucas Aguiar Cera e Renan Wenzel
+
 package com.example.artistsxmusics;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -35,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
         btnAdd.setOnClickListener(new ListenerAdd());
 
-//        listSongs.setOnItemClickListener(new ListClickListener());
+        listSongs.setOnItemClickListener(new ListClickListener());
 
         database = openOrCreateDatabase("musicartists", MODE_PRIVATE, null);
 
@@ -64,9 +68,9 @@ public class MainActivity extends AppCompatActivity {
             artist = txtArtist.getText().toString();
             genre = txtGenre.getText().toString();
 
-            String cmd = "INSERT INTO artists(name, genre) VALUES ('";
+            String cmd = "INSERT INTO artists (name, genre) VALUES ('";
             cmd = cmd + artist;
-            cmd = cmd + "',''";
+            cmd = cmd + "', '";
             cmd = cmd + genre;
             cmd = cmd + "')";
 
@@ -77,6 +81,21 @@ public class MainActivity extends AppCompatActivity {
 
             cursorArtists = database.rawQuery("SELECT _rowid_ _id, id, name, genre FROM artists", null);
             adapterArtists.changeCursor(cursorArtists);
+        }
+    }
+
+    private class ListClickListener implements AdapterView.OnItemClickListener{
+
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View v, int i, long l) {
+            Cursor c = (Cursor) adapterArtists.getItem(i);
+
+            Intent intent = new Intent(getApplicationContext(), SongsActivity.class);
+
+            intent.putExtra("id", c.getInt(c.getColumnIndex("id")));
+            intent.putExtra("name", c.getString(c.getColumnIndex("name")));
+
+            startActivity(intent);
         }
     }
 }
